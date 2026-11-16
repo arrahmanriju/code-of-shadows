@@ -1,0 +1,33 @@
+.city-label {
+  font: 600 12px/1.4 Arial,Helvetica,sans-serif;
+  color: #f1f5fa;
+  background: #081421ed;
+  border: 1px solid #8ba4b080;
+  border-radius: 3px;
+  box-shadow: 0 3px 16px #000a;
+  text-shadow: 0 1px 2px #000;
+  padding: 8px 11px;
+  min-height: 42px;
+  max-width: 190px;
+  white-space: normal;
+  text-align: center;
+}
+.city-label small { display:block; font:10px/1.4 monospace; color:#bacbd7; margin-top:3px; }
+.city-label:hover,.city-label.lit,.city-label:focus-visible {color:#fff0c7;border-color:#e8c888;background:#142331fa;}
+.city-label-connectors {position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;}
+.city-label-connectors line {stroke:#e7c68a80;stroke-width:1;}
+.world [data-city-surface][data-pan-ready] {touch-action:none;}
+.world [data-city-surface][data-pan-ready] canvas {cursor:grab;}
+.world [data-city-surface][data-hovered] canvas {cursor:pointer;}
+.world [data-city-surface][data-dragging] {user-select:none;}
+.world [data-city-surface][data-dragging] canvas,.world [data-city-surface][data-dragging] .city-label {cursor:grabbing;}
+.city-pan-hint {position:absolute;bottom:170px;right:20px;pointer-events:none;color:#d8c294;background:#081421d9;padding:9px 12px;border:1px solid #d9b77b30;font:10px monospace;}
+.city-zoom-controls {position:absolute;bottom:210px;right:20px;display:flex;flex-direction:column;gap:6px;}
+.city-zoom-controls button {width:40px;height:40px;background:#081421ed;border:1px solid #d9b77b70;color:#e8c888;font:22px monospace;cursor:pointer;}
+.city-zoom-controls button:hover {background:#203040;border-color:#e8c888;}
+@media(max-width:700px) {
+  .city-label {font-size:11.5px;max-width:165px;padding:7px 9px;}
+  .city-label small {display:none;}
+  .city-pan-hint {bottom:12px;right:12px;font-size:9px;}
+  .city-zoom-controls {bottom:52px;right:12px;}
+}

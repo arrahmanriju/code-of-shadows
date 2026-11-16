@@ -1,0 +1,112 @@
+[
+    {
+        "id":  "about",
+        "title":  "About Azizur Rahman",
+        "category":  "profile",
+        "content":  "Azizur Rahman is an AI/ML enthusiast and software developer in Dhaka, Bangladesh. Education: B.Sc. in Computer Science and Engineering, Southeast University, Dhaka; CGPA 3.56/4.00. Coursework completed; internship in progress. His professional interests are AI/ML Engineering, Machine Learning, NLP, and Software Development, including AI/ML Engineer Intern opportunities. He developed multiple academic and personal software projects and worked with Python, C, C++, Java, and C#. He participated in competitive programming and ICPC contests, developed Mental Health Prediction and Student Placement Prediction projects, and contributed to a tiredness and alertness image dataset. Achievements: ICPC 2025 Regionalist, 210+ Codeforces problems solved, maximum rating 866, 2nd and 3rd place in university programming contests, and university chess tournament champion. No internship employer or role details are available.",
+        "keywords":  [
+                         "about",
+                         "azizur",
+                         "rahman",
+                         "career",
+                         "interests",
+                         "intern",
+                         "opportunities",
+                         "পরিচয়",
+                         "আজিজুর",
+                         "সম্পর্কে",
+                         "ক্যারিয়ার",
+                         "aziz",
+                         "riju",
+                         "biography",
+                         "introduction",
+                         "background"
+                     ]
+    },
+    {
+        "id":  "education",
+        "title":  "Education",
+        "category":  "education",
+        "content":  "Azizur Rahman studied B.Sc. in Computer Science and Engineering at Southeast University, Dhaka, Bangladesh. CGPA: 3.56/4.00. Coursework completed; internship in progress. No internship employer, dates, or role details are available.",
+        "keywords":  [
+                         "education",
+                         "degree",
+                         "university",
+                         "cgpa",
+                         "coursework",
+                         "internship",
+                         "শিক্ষা",
+                         "পড়াশোনা",
+                         "বিশ্ববিদ্যালয়",
+                         "সিজিপিএ",
+                         "ইন্টার্নশিপ"
+                     ]
+    },
+    {
+        "id":  "skills",
+        "title":  "Technical skills",
+        "category":  "skills",
+        "content":  "Programming: Python, C, C++, Java, C#, SQL. Frameworks and tools: scikit-learn, pandas, NumPy, Streamlit, ASP.NET, Next.js, Express, Supabase, SQLite, Docker, Git and GitHub. Professional interests: machine learning and NLP.",
+        "keywords":  [
+                         "technical",
+                         "skills",
+                         "programming",
+                         "languages",
+                         "frameworks",
+                         "tools",
+                         "দক্ষতা",
+                         "প্রোগ্রামিং",
+                         "ভাষা",
+                         "টেকনিক্যাল"
+                     ]
+    },
+    {
+        "id":  "icpc",
+        "title":  "Competitive programming and ICPC",
+        "category":  "achievements",
+        "content":  "Azizur participated in ICPC 2024 and 2025 and qualified for the ICPC 2025 Regional Contest. He has solved 210+ Codeforces problems; his highest Codeforces rating is 866. He achieved 2nd and 3rd place in university programming contests.",
+        "sourceUrl":  "https://codeforces.com/profile/riju_rahman",
+        "keywords":  [
+                         "icpc",
+                         "journey",
+                         "competitive",
+                         "codeforces",
+                         "rating",
+                         "contests",
+                         "আইসিপিসি",
+                         "প্রতিযোগিতা",
+                         "রেটিং"
+                     ]
+    },
+    {
+        "id":  "achievements",
+        "title":  "Additional achievements",
+        "category":  "achievements",
+        "content":  "Azizur was university chess tournament champion and won football tournaments as part of a team. No tournament dates or additional placements are available.",
+        "keywords":  [
+                         "achievements",
+                         "awards",
+                         "chess",
+                         "football",
+                         "অর্জন",
+                         "দাবা",
+                         "ফুটবল"
+                     ]
+    },
+    {
+        "id":  "research-overview",
+        "title":  "AI/ML projects and research",
+        "category":  "research",
+        "content":  "Azizur\u0027s AI/ML work includes Student Placement Prediction, Mental Health Prediction, and the Tiredness and Alertness Dataset. These are learning, academic, and research-oriented projects. Published papers, model accuracy, dataset size, and deployment results are not available.",
+        "keywords":  [
+                         "ai",
+                         "ml",
+                         "research",
+                         "machine learning",
+                         "nlp",
+                         "গবেষণা",
+                         "মেশিন লার্নিং",
+                         "এআই"
+                     ]
+    }
+]

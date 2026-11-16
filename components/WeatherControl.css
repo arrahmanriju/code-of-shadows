@@ -1,0 +1,16 @@
+.weather-control{position:relative;color:#9eafbc;font:8px monospace;letter-spacing:1px;z-index:35}
+.weather-control summary{list-style:none;display:flex;align-items:center;gap:7px;padding:8px;color:#8fb3c8;cursor:pointer;user-select:none}
+.weather-control summary::-webkit-details-marker{display:none}
+.weather-control[open] summary,.weather-control summary:hover{color:#e5c783}
+.weather-menu{position:absolute;right:0;bottom:calc(100% + 10px);width:260px;padding:10px;background:#08131df2;border:1px solid #d9b77b42;box-shadow:0 18px 50px #000b;backdrop-filter:blur(14px)}
+.weather-heading{display:flex;align-items:center;gap:8px;padding:7px 8px 10px;color:#d9b77b;font:8px monospace;letter-spacing:1.6px;border-bottom:1px solid #ffffff13}
+.weather-menu button.weather-mode{width:100%;display:flex;align-items:center;gap:10px;padding:10px 8px;border:0;border-bottom:1px solid #ffffff0d;background:transparent;color:#9fb0bd;text-align:left;letter-spacing:0}
+.weather-menu button.weather-mode:hover,.weather-menu button.weather-mode.active{background:#d9b77b0d;color:#f0d79f}
+.weather-mode>span{display:flex;flex-direction:column;gap:3px}
+.weather-mode strong{font:9px monospace;letter-spacing:.6px}
+.weather-mode small{font:7px monospace;color:#6f8392;line-height:1.4}
+.weather-toggles{display:flex;gap:16px;padding:11px 8px 5px}
+.weather-toggles label{display:flex;align-items:center;gap:6px;color:#a9bac5;cursor:pointer}
+.weather-toggles label.disabled{opacity:.4;cursor:not-allowed}
+.weather-toggles input{accent-color:var(--gold)}
+@media(max-width:700px){.toolbar{gap:4px}.toolbar>button>span,.weather-control summary>span{display:none}.weather-control summary{font-size:7px;padding:6px 4px}.weather-menu{right:-80px;width:245px}.weather-mode small{font-size:6.5px}}

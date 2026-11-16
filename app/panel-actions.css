@@ -1,0 +1,28 @@
+/* Actions inside the existing district panels. */
+.action-button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:11px 13px;border:1px solid #d9b77b55;background:#d9b77b09;color:var(--gold);font:11px monospace;line-height:1.5;cursor:pointer;transition:background .2s,border-color .2s,box-shadow .2s,transform .2s}
+.action-button svg,.contact-email svg,.contact-socials svg{flex-shrink:0;filter:drop-shadow(0 0 5px #d9b77b40)}
+.action-button:hover{background:#d9b77b18;border-color:var(--gold);box-shadow:0 0 16px #d9b77b12;transform:translateY(-2px)}
+.action-button:disabled,.resume:disabled{cursor:not-allowed;color:#8393a1;border-color:#ffffff25;background:#ffffff04;box-shadow:none;transform:none}
+.project .project-description{font-size:13px;margin:12px 0;line-height:1.8}
+.project .project-technologies{font-size:11px;color:#c8b691;line-height:1.8}
+.project-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.project-details{margin-top:17px}
+.project-details summary{list-style:none;width:fit-content}
+.project-details summary::-webkit-details-marker{display:none}
+.project-details[open] summary svg{transform:rotate(180deg)}
+.project-detail-content{padding:8px 0 0;color:#9cabb8;font-size:13px;line-height:1.8}
+.project-detail-content ul{padding-left:19px;margin:10px 0}
+.project-detail-content li+li{margin-top:8px}
+.contact-email{display:flex;align-items:center;gap:10px;color:var(--gold);font-size:clamp(12px,3.5vw,15px);overflow-wrap:anywhere;margin:24px 0 16px}
+.email-button{background:#d9b77b17}
+.contact-socials{margin-top:15px}
+.contact-socials .social-link{min-height:58px;transition:color .2s,padding .2s}
+.contact-socials .social-link>span{display:flex;align-items:center;gap:12px}
+.contact-socials .social-link:hover{color:var(--gold);padding-left:6px}
+.info-panel .resume-status{font-size:12px;color:#8795a4;margin-top:12px}
+.resume-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:25px}
+.resume-actions .action-button{width:100%;margin:0;gap:8px}
+.resume-view:not(:disabled):hover{color:#c6eff4;border-color:#82c9d4;background:#82c9d413;box-shadow:0 0 16px #82c9d415}
+.resume-status code{color:var(--gold);overflow-wrap:anywhere}
+@media(max-width:560px){.resume-actions{grid-template-columns:1fr}}
+@media(max-width:400px){.project-actions .action-button{flex:1}.resume-download{width:100%;gap:8px;font-size:10px}}

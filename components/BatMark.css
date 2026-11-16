@@ -1,0 +1,32 @@
+.brand .brand-mark {
+  display: block;
+  width: 60px;
+  height: 38px;
+  flex-shrink: 0;
+  margin-right: 12px;
+  transform: none;
+  /* Crop the supplied square SVG's empty vertical padding, without stretching
+     its wide bat silhouette. No replacement paths or badge are drawn. */
+  object-fit: cover;
+  object-position: center;
+  filter: invert(87%) sepia(29%) saturate(675%) hue-rotate(345deg) brightness(96%) contrast(91%) drop-shadow(0 0 6px #d9b77b55);
+  pointer-events: none;
+}
+
+.brand .brand-title {
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .brand .brand-mark {
+    width: 42px;
+    height: 30px;
+    margin-right: 7px;
+  }
+
+  .brand .brand-title {
+    font-size: 14px;
+    letter-spacing: 1.1px;
+  }
+}
+
