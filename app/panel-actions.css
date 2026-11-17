@@ -26,3 +26,18 @@
 .resume-status code{color:var(--gold);overflow-wrap:anywhere}
 @media(max-width:560px){.resume-actions{grid-template-columns:1fr}}
 @media(max-width:400px){.project-actions .action-button{flex:1}.resume-download{width:100%;gap:8px;font-size:10px}}
+
+/* Keep the existing city action aligned without changing panel navigation. */
+.back-button{display:inline-flex;align-items:center;gap:8px;min-height:44px;max-width:100%}
+.back-button>svg{flex-shrink:0;color:var(--gold);transition:transform .2s ease}
+.back-button:hover>svg{transform:translateX(-3px)}
+.reduced .back-button:hover>svg{transform:none}
+@media(prefers-reduced-motion:reduce){.back-button:hover>svg{transform:none}}
+
+/* Overview navigation beneath the explorer introduction. */
+.overview-back{font-size:14px;line-height:1.4;letter-spacing:.03em;min-height:44px;white-space:nowrap;transition:color .2s ease}
+.overview-back:hover{color:#f5d58a}
+.overview-back>svg{flex-shrink:0;transition:transform .2s ease}
+.overview-back:hover>svg{transform:translateX(-3px)}
+.reduced .overview-back:hover>svg{transform:none}
+@media(prefers-reduced-motion:reduce){.overview-back:hover>svg{transform:none}}

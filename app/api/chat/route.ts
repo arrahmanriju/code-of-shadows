@@ -14,5 +14,9 @@ export async function POST(request: Request) {
   try { input = validateInput(await readBody(request)); }
   catch (error) { return Response.json({error:error instanceof Error ? error.message : 'Invalid request.',errorCode:'INVALID_INPUT',documentIds:[]},{status:400,headers}); }
   const result = await answerQuestion(input.question,input.history,generateAnswer);
+  // Provider/retrieval diagnostics are available only in development.
+  if(process.env.NODE_ENV==='production') {
+    return Response.json({answer:result.answer,sources:result.sources,mode:result.mode,reason:result.reason},{headers});
+  }
   return Response.json(result,{headers});
 }

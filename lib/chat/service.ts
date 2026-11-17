@@ -8,7 +8,7 @@ import { classifyIntent, conversationalReply, resolveQuestion } from './conversa
 type Provider = (prompt: string, signal: AbortSignal) => Promise<string>;
 export async function answerQuestion(question: string, history: HistoryMessage[], provider: Provider, timeoutMs = 13_000): Promise<ChatResponse> {
   const intent = classifyIntent(question, history);
-  if(intent !== 'PORTFOLIO_QUESTION') return conversationalReply(intent);
+  if(intent !== 'PORTFOLIO_QUESTION' && intent !== 'HIRING_SUITABILITY') return conversationalReply(intent);
   const resolved = resolveQuestion(question, history);
   if(resolved.unresolved) return {...conversationalReply('OUT_OF_SCOPE'),intent,answer:'Which project do you mean? Please mention its name so I can share the right portfolio details.'};
   // Only resolve short referential follow-ups from the last USER turn; assistant text is never retrieved as evidence.

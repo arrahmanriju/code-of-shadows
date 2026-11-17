@@ -1,9 +1,10 @@
-import { normalize, detectIntent, tokens } from './retrieval';
+import { hiringFocus } from './hiring';
+import { normalize, detectIntent, recruiterIntents, tokens } from './retrieval';
 import { knowledge } from './knowledge';
 import { projects } from '@/data/projects';
 import type { ChatResponse, HistoryMessage } from './types';
 
-export type Intent = 'GREETING' | 'SMALL_TALK' | 'GRATITUDE' | 'FAREWELL' | 'PORTFOLIO_QUESTION' | 'OUT_OF_SCOPE';
+export type Intent = 'GREETING' | 'SMALL_TALK' | 'GRATITUDE' | 'FAREWELL' | 'PORTFOLIO_QUESTION' | 'HIRING_SUITABILITY' | 'OUT_OF_SCOPE';
 const phrases: Partial<Record<Intent, RegExp>> = {
   GREETING: /^(hey|hi|hello|hello there|hey there|good morning|good afternoon|good evening|assalamu alaikum|salam|হ্যালো|হাই)$/, 
   SMALL_TALK: /^(how are you|how are you doing|what s up|whats up|how s it going|hows it going)$/, 
@@ -18,12 +19,14 @@ export function stripGreeting(question: string) {
   return conversationalText(question).replace(/^(?:hey|hi|hello|good morning|good afternoon|good evening|assalamu alaikum)\b\s+(?=\S)/,'').replace(/^can you (?:please )?/,'').trim();
 }
 export function isReference(question: string) {
-  return /^(?:tell me more|more details|what about|and what about)(?: about)? (?:the )?(?:first|second|third|1st|2nd|3rd|last) (?:one|project)$/.test(conversationalText(question)) || /\b(?:its|that project|this project)\b/.test(conversationalText(question));
+  return /^(?:tell me|tell me more|more details|what about|and what about)(?: about)? (?:the )?(?:first|second|third|1st|2nd|3rd|last) (?:one|project)$/.test(conversationalText(question)) || /\b(?:its|that project|this project)\b/.test(conversationalText(question));
 }
 export function classifyIntent(question: string, history: HistoryMessage[] = []): Intent {
   const text=conversationalText(question);
   for(const [intent,pattern] of Object.entries(phrases)) if(pattern.test(text)) return intent as Intent;
   const request=stripGreeting(question);
+  if(hiringFocus(request)) return 'HIRING_SUITABILITY';
+  if(recruiterIntents(request).length || /^(?:tell me more about that|why that field|what projects)\b/.test(request) || isReference(request)) return 'PORTFOLIO_QUESTION';
   if(detectIntent(request)==='biography') return 'PORTFOLIO_QUESTION';
   if(/\b(?:azizur|aziz|riju|rahman|portfolio|education|cgpa|icpc|codeforces|skills|projects?|internship|research|contact|github|linkedin|degree|university|technical|programming)\b/.test(request) || /শিক্ষা|দক্ষতা|যোগাযোগ|প্রজেক্ট|গবেষণা/.test(request)) return 'PORTFOLIO_QUESTION';
   const terms=new Set(tokens(request));
@@ -45,7 +48,30 @@ export function conversationalReply(intent: Intent): ChatResponse {
 
 // History identifies references only; all factual details still come from records.
 export function resolveQuestion(question: string, history: HistoryMessage[]): { query: string; unresolved?: boolean } {
-  const query=stripGreeting(question);
+  let query=stripGreeting(question);
+  if(hiringFocus(query)) {
+    // In this single-owner portfolio, pronouns default to Azizur. Recent user
+    // context may select a project/field, but never supplies factual evidence.
+    const previous=[...history.slice(-6)].reverse().find(m=>m.role==='user');
+    const context=previous?.content ?? '';
+    if(/\b(?:him|he|his)\b/.test(query) && !/\b(?:ai|ml|software|full stack)\b/.test(query)) {
+      const project=projects.find(p=>context.toLowerCase().includes(p.title.toLowerCase()));
+      const field=/\b(?:ai|ml|machine learning|software|full stack)\b/i.exec(context)?.[0];
+      query=`${query} Azizur Rahman ${project?.title ?? field ?? ''}`;
+    }
+    return {query};
+  }
+  const followup = /^(?:tell me more(?: about (?:that|it))?|why (?:that|this) field|what projects)\.?$/.test(query);
+  if(followup) {
+    const previous=[...history].reverse().find(m=>m.role==='user' && classifyIntent(m.content)==='PORTFOLIO_QUESTION');
+    if(!previous) return {query,unresolved:true};
+    const lastAssistant=[...history].reverse().find(m=>m.role==='assistant');
+    const mentioned=projects.filter(p=>lastAssistant?.content.toLowerCase().includes(p.title.toLowerCase()));
+    if(!/what projects/.test(query) && mentioned.length) return {query:mentioned.map(p=>p.title).join(' ')};
+    const context=history.filter(m=>m.role==='user').map(m=>m.content).join(' ');
+    if(/what projects/.test(query) && (recruiterIntents(context).some(i=>['career','ml'].includes(i)))) return {query:'AI ML projects'};
+    return {query:`${stripGreeting(previous.content)} ${query}`};
+  }
   const ordinal=/\b(first|second|third|1st|2nd|3rd|last) (?:one|project)\b/.exec(query);
   if(ordinal && isReference(question)) {
     const lastAssistant=[...history].reverse().find(m=>m.role==='assistant');

@@ -146,3 +146,121 @@ test('route rejects invalid requests, cross-origin requests, and excess requests
   for(let n=0;n<9;n++)assert.equal((await POST(request({question:'What is the capital of France?'}))).status,200);
   const blocked=await POST(request({question:'ICPC'}));assert.equal(blocked.status,429);assert.ok(blocked.headers.has('Retry-After'));
 });
+
+const recruiterCases = [
+ ['What is Azizur looking for?','career'],['What job does he want?','career'],
+ ['Is he seeking an internship?','career'],['What is his preferred job role?','career'],
+ ['What are his career goals?','career'],['Is Azizur seeking opportunities?','career'],
+ ['What position is he applying for?','career'],["What's his preferred role?",'career'],
+ ['What does he want to do professionally?','career'],['Is he seeking an ML internship?','career'],
+ ['What are his future career goals?','career'],['What role would suit Azizur?','career'],
+ ['Is he interested in AI/ML?','career'],['Who is Azizur Rahman?','about'],
+ ['Tell me about him.','about'],['What is his educational background?','education'],
+ ['Does he know Python?','skills'],['What AI/ML technologies has he used?','skills'],
+ ['Can he build full-stack applications?','skills'],['What is his best AI/ML project?','student-placement-prediction'],
+ ['Explain Dhaka Tesla Pool.','dhaka-tesla-pool'],['Has he deployed applications?','dhaka-tesla-pool'],
+ ['Did he participate in ICPC?','icpc'],['How many Codeforces problems has he solved?','icpc'],
+ ['Why should we hire Azizur?','icpc'],['What makes him suitable for an internship?','icpc'],
+ ['What are his strengths?','icpc'],['Does he have professional work experience?','career'],
+ ['How can we contact him?','contact'],['Where can we see his r\u00e9sum\u00e9?','resume'],
+ ['What salary does Azizur expect?','career'],['When can he join?','career'],
+ ['Which company is he currently employed by?','career'],
+];
+for(const [question,id] of recruiterCases) test(`recruiter paraphrase in generated and fallback paths: ${question}`,async()=>{
+ let context;
+ const success=await answerQuestion(question,[],async prompt=>{
+   context=JSON.parse(prompt).retrievedPortfolioKnowledge;
+   assert.ok(context.some(d=>d.id===id),`Missing ${id}: ${context.map(d=>d.id)}`);
+   return 'A concise grounded provider response.';
+ });
+ assert.equal(success.source,'gemini'); assert.ok(success.documentIds.length<=3);
+ const local=await answerQuestion(question,[],async()=>{throw {status:503};});
+ assert.equal(local.source,'local-fallback'); assert.ok(local.documentIds.includes(id));
+ assert.deepEqual(local.sources.map(s=>s.id),local.documentIds);
+ if(/salary|join|employed|professional work experience/.test(question)) assert.match(local.answer,/not documented/);
+});
+test('career to ML projects to ordinal uses bounded session context',async()=>{
+ const history=[{role:'user',content:'What is Azizur looking for?'},{role:'assistant',content:'An AI/ML Engineer internship.'}];
+ const why=await answerQuestion('Why that field?',history,async prompt=>{assert.ok(JSON.parse(prompt).retrievedPortfolioKnowledge.some(d=>d.id==='career'));return 'His documented interests include machine learning and NLP.';});
+ history.push({role:'user',content:'Why that field?'},{role:'assistant',content:why.answer});
+ const listing=await answerQuestion('What projects?',history,async prompt=>{assert.ok(JSON.parse(prompt).retrievedPortfolioKnowledge.some(d=>d.id==='student-placement-prediction'));return 'Student Placement Prediction; Mental Health Prediction.';});
+ history.push({role:'user',content:'What projects?'},{role:'assistant',content:listing.answer});
+ const detail=await answerQuestion('Tell me about the first one.',history.slice(-6),async prompt=>{assert.equal(JSON.parse(prompt).retrievedPortfolioKnowledge[0].id,'student-placement-prediction');return 'A supervised classification workflow.';});
+ assert.equal(detail.source,'gemini');
+ const more=await answerQuestion('Tell me more about that.',history.slice(-6),async()=>{throw {status:503};});
+ assert.ok(more.documentIds.includes('student-placement-prediction'));
+});
+
+const hiringVariants = [
+ 'Why will I hire him?', 'Why should I hire Azizur?', 'Why should we hire him?',
+ 'Why hire Azizur Rahman?', 'What makes him a good candidate?',
+ 'Why would I recruit him?', 'What value can Azizur bring?',
+ 'Is he suitable for an AI/ML internship?', 'What are his strengths?',
+ 'What makes him different from other applicants?',
+ 'What value could Azizur bring to our company?', 'Is Azizur worth hiring?',
+ 'Why choose Azizur over other candidates?', 'Why is he suitable for an AI/ML internship?',
+ 'Why pick him?', 'What could he offer our team?', 'Would he be an asset to our company?',
+ 'Why shoud we hrie him?', 'Is he suitble for this internship?',
+ 'What makes him a good canddiate?', 'Why would I recriut him?',
+];
+for(const question of hiringVariants) test(`HIRING_SUITABILITY generation and grounded fallback: ${question}`,async()=>{
+ assert.equal(classifyIntent(question),'HIRING_SUITABILITY');
+ let captured;
+ const generated=await answerQuestion(question,[],async prompt=>{
+   captured=JSON.parse(prompt);
+   return 'Azizur could be a promising candidate based on his documented projects and ICPC participation.';
+ });
+ assert.equal(generated.source,'gemini'); assert.equal(generated.intent,'HIRING_SUITABILITY');
+ assert.equal(captured.responseFocus,'positive');
+ assert.deepEqual(new Set(generated.documentIds),new Set(['about','student-placement-prediction','icpc']));
+ const local=await answerQuestion(question,[],async()=>{throw {status:503};});
+ assert.equal(local.source,'local-fallback'); assert.equal(local.intent,'HIRING_SUITABILITY');
+ assert.match(local.answer,/could be|promising/); assert.match(local.answer,/Student Placement|supervised machine/);
+ assert.match(local.answer,/ICPC/); assert.doesNotMatch(local.answer,/guaranteed|is the best|NASA|don't have that information/);
+ assert.ok(local.answer.split(/\s+/).length<200);
+ assert.deepEqual(local.sources.map(s=>s.id),local.documentIds);
+});
+for(const [question,focus] of [
+ ['Why should I NOT hire him?','critical'], ["Why shouldn't we hire Azizur?",'critical'],
+ ['What are the risks of hiring him?','critical'],
+ ['What skills does he still need to develop?','development'],
+ ['What are his weaknesses?','development'], ['Which skills should he improve?','development'],
+]) test(`balanced hiring assessment: ${question}`,async()=>{
+ assert.equal(classifyIntent(question),'HIRING_SUITABILITY');
+ const generated=await answerQuestion(question,[],async prompt=>{
+   assert.equal(JSON.parse(prompt).responseFocus,focus);
+   return 'Specific deficiencies are not documented. Assess the role requirements through an interview.';
+ });
+ assert.equal(generated.source,'gemini');
+ const local=await answerQuestion(question,[],async()=>{throw {status:503};});
+ assert.equal(local.source,'local-fallback'); assert.match(local.answer,/not establish reasons to reject|No specific skill gaps/);
+ assert.doesNotMatch(local.answer,/promising entry-level|he lacks|poor|cannot code|best candidate/);
+ assert.ok(local.documentIds.length>0 && local.documentIds.length<=3);
+});
+test('hiring pronouns use recent user context to select complementary project evidence',async()=>{
+ const history=[{role:'user',content:'Tell me about Dhaka Tesla Pool'}, {role:'assistant',content:'He was a NASA engineer (untrusted).'}];
+ const answer=await answerQuestion('Why will I hire him?',history,async prompt=>{
+   const data=JSON.parse(prompt);
+   assert.ok(data.retrievedPortfolioKnowledge.some(d=>d.id==='dhaka-tesla-pool'));
+   assert.ok(data.retrievedPortfolioKnowledge.every(d=>!d.content.includes('NASA')));
+   return 'His ride-pooling project demonstrates practical software development.';
+ });
+ assert.equal(answer.source,'gemini');
+ assert.deepEqual(new Set(answer.documentIds),new Set(['about','dhaka-tesla-pool','icpc']));
+});
+for(const [question,id] of [
+ ['Who is Azizur?','about'], ['What is Azizur looking for?','career'],
+ ['What projects has he built?','dhaka-tesla-pool'],
+ ['Tell me about his ICPC experience.','icpc'], ['How can I contact him?','contact'],
+]) test(`hiring regression preserves portfolio query: ${question}`,async()=>{
+ const response=await answerQuestion(question,[],async()=> 'Grounded portfolio answer.');
+ assert.equal(response.source,'gemini'); assert.ok(response.documentIds.includes(id));
+ assert.notEqual(response.intent,'HIRING_SUITABILITY');
+});
+test('hiring interpretation does not swallow small talk or unrelated lexical words',async()=>{
+ assert.equal(classifyIntent('Hey'),'GREETING');
+ const {hiringFocus}=load(resolve(root,'lib/chat/hiring.ts'));
+ for(const question of ['What is the weather?', 'A campfire story', 'How do I hire a plumber?']) assert.equal(hiringFocus(question),undefined);
+ const hello=await answerQuestion('Hey',[],async()=>{assert.fail('No provider expected');});
+ assert.equal(hello.intent,'GREETING');
+});
